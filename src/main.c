@@ -24,7 +24,6 @@ int main(int argc, char **argv)
     int retval = 0;
     int question_code = 0;
     int tmp = 0;
-    int nquestions = 0;
     char buffer[MAIN_BUFFER_SIZE];
     FILE *fd = NULL;
 
@@ -71,7 +70,24 @@ int main(int argc, char **argv)
     strncpy(title, buffer, tmp);
     *(title+tmp) = '\0';
 
+    /* Note: This will have to be moved inwards later. It can stay for now,
+     * however, until I add this functionality into the generate_question
+     * function call */
     retval = generate_question_type(fd, question_code, title);
+    if(retval != GENERATE_SUCCESS)
+    {
+        retcode = EXIT_FAILURE;
+        fprintf(stderr, "Failed to generate question type.\n");
+        goto CLEANUP;
+    }
+
+    retval = generate_question(fd, question_code);
+    if(retval != GENERATE_SUCCESS)
+    {
+        retcode = EXIT_FAILURE;
+        fprintf(stderr, "Failed to generate question.\n");
+        goto CLEANUP;
+    }
 
 CLEANUP:
     if(title != NULL)
