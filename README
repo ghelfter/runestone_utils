@@ -1,0 +1,9 @@
+This is a set of utilities to generate the rst files for the Runestone
+Interactive utility. It provides an interactive prompting for the type of
+question, the ID of the question and then any question-specific details.
+
+The program will take an optional command line argument for an output file,
+otherwise it will output the question to the standard output stream. The
+output can be copied and pasted into the browser prompt for the question
+code, since their standard question template did not work without significant
+modification. A generation program is significantly better.
