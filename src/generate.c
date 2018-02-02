@@ -24,13 +24,13 @@
 static void generate_chomp(char *buffer, int buffer_len, char delim);
 
 /* Functions for reading specific question types */
-static int generate_multiple_choice(FILE *fd, FILE *infile);
-static int generate_fill_in_blanks(FILE *fd, FILE *infile);
+static int generate_multiple_choice(FILE *fd, FILE *infile, const char * file);
+static int generate_fill_in_blanks(FILE *fd, FILE *infile, const char * file);
 static void prompt_and_chomp(const char *prompt, char *buffer, int size, 
                              FILE *infile);
 
 /* Function pointer table */
-typedef int (*question_func_t)(FILE *fd, FILE *infile);
+typedef int (*question_func_t)(FILE *fd, FILE *infile, const char * file);
 static question_func_t question_function_table[NQUESTIONS] = {
     NULL,
     generate_multiple_choice,
@@ -120,10 +120,10 @@ int acquire_question_type(FILE *fd, int *in_qtype)
 }
 
 /* Function that will call the appropriate function */
-int generate_question(FILE *fd, int question_type)
+int generate_question(FILE *fd, int question_type, const char *title)
 {
     int retcode = GENERATE_SUCCESS;
-    if(fd == NULL)
+    if(fd == NULL || title == NULL)
     {
         retcode = GENERATE_NULL_PTR;
     }
@@ -136,7 +136,7 @@ int generate_question(FILE *fd, int question_type)
         }
         else
         {
-            retcode = question_function_table[question_type](fd, stdin);
+            retcode = question_function_table[question_type](fd, stdin, title);
         }
     }
 
@@ -177,7 +177,7 @@ static void generate_chomp(char *buffer, int buffer_len, char delim)
     }
 }
 
-static int generate_multiple_choice(FILE *fn, FILE *infile)
+static int generate_multiple_choice(FILE *fd, FILE *infile, const char *title)
 {
     int retcode = GENERATE_SUCCESS;
     char read_buff[MAX_BIG_BUFFER_SIZE];
@@ -195,7 +195,7 @@ static int generate_multiple_choice(FILE *fn, FILE *infile)
     int q_count = 0; /* Count of the number of choices */
     int a_count = 0; /* Answer count */
 
-    if(fn == NULL || infile == NULL)
+    if(fd == NULL || infile == NULL || title == NULL)
     {
         retcode = GENERATE_NULL_PTR;
         goto CLEANUP;
@@ -312,6 +312,16 @@ static int generate_multiple_choice(FILE *fn, FILE *infile)
         strncpy(*(q_responses+i), read_buff, tmp+1);
     }
 
+    /* Write the title string to the output file */
+    tmp = generate_question_type(fd, QUESTION_TYPE_MULTI_CHOICE, title);
+    if(tmp != GENERATE_SUCCESS)
+    {
+        retcode = tmp;
+        goto CLEANUP;
+    }
+
+    /* Go through and write the question to the outpout file */
+
 CLEANUP:
     /* Clear any memory */
     if(q_tags != NULL)
@@ -371,10 +381,17 @@ CLEANUP:
     return retcode;
 }
 
-static int generate_fill_in_blanks(FILE *fd, FILE *infile)
+static int generate_fill_in_blanks(FILE *fd, FILE *infile, const char *title)
 {
     int retcode = GENERATE_SUCCESS;
 
+    if(fd == NULL || infile == NULL || title == NULL)
+    {
+        retcode = GENERATE_NULL_PTR;
+        goto CLEANUP;
+    }
+
+CLEANUP:
     return retcode;
 }
 
