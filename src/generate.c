@@ -67,7 +67,7 @@ int generate_question_type(FILE *fd, int question_type, const char *title)
     }
     else
     {
-        fprintf(fd, ".. %s:: %s\n\n", question_type_table[question_type], title);
+        fprintf(fd, ".. %s:: %s\n", question_type_table[question_type], title);
     }
 
     return retcode;
@@ -311,6 +311,20 @@ static int generate_multiple_choice(FILE *fd, FILE *infile, const char *title)
         }
         strncpy(*(q_responses+i), read_buff, tmp+1);
     }
+    prompt_and_chomp("Please enter the number of correct answers: ",
+                     read_buff, MAX_BIG_BUFFER_SIZE, infile);
+    endptr = NULL;
+    a_count = strtol(read_buff, &endptr, 0);
+    if(*endptr != '\0' || endptr == read_buff)
+    {
+        retcode = GENERATE_PARSE_ERROR;
+        goto CLEANUP;
+    }
+    for(i = 0; i < a_count; ++i)
+    {
+        prompt_and_chomp("Please enter a correct answer label: ",
+                         read_buff, MAX_BIG_BUFFER_SIZE, infile);
+    }
 
     /* Write the title string to the output file */
     tmp = generate_question_type(fd, QUESTION_TYPE_MULTI_CHOICE, title);
@@ -321,6 +335,16 @@ static int generate_multiple_choice(FILE *fd, FILE *infile, const char *title)
     }
 
     /* Go through and write the question to the outpout file */
+    for(i = 0; i < q_count; ++i)
+    {
+        fprintf(fd, "    :answer_%s: %s\n", q_tags[i], q_texts[i]);
+    }
+    for(i = 0; i < q_count; ++i)
+    {
+        fprintf(fd, "    :feedback_%s: %s\n", q_tags[i], q_responses[i]);
+    }
+
+    fprintf(fd, "\n    %s\n", question_text);
 
 CLEANUP:
     /* Clear any memory */
