@@ -25,7 +25,10 @@ CLEANFILES = *.o *.out core.* $(TARFILE) $(ZIPFILE)
 
 # Object file list
 OBJECTS =	main.o \
-			generate.o
+			generate.o \
+			mchoice.o \
+			fillblank.o \
+			util.o
 
 # Programs
 

@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "generate.h"
+#include "gen_function.h"
 
 #define NARGS 2
 #define MAIN_BUFFER_SIZE 2048
