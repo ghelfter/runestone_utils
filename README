@@ -7,3 +7,7 @@ otherwise it will output the question to the standard output stream. The
 output can be copied and pasted into the browser prompt for the question
 code, since their standard question template did not work without significant
 modification. A generation program is significantly better.
+
+Note: As of right now, this project is on hold, as it looks like Runestone
+may be taken off the table, as it isn't doing what we thought it might
+be able to. Thus, I will halt development of this piece of code here too.
